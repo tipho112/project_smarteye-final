@@ -318,7 +318,7 @@ export default {
                 if(inPassword!=confirmPassword){
                     alert("입력한 비밀번호와 확인 비밀번호가 다릅니다.")
                 }else{
-                    this.$http.post('http://localhost:8888/api/user/add',{
+                    axios.post('http://localhost:8888/api/user/add',{
                         idString:id,
                         firstName:firstName,
                         lastName:lastName,
@@ -341,7 +341,6 @@ export default {
                         this.rank = '',
                         this.role = '',
                         this.cctvGroups=[];
-                        // location.reload();
                     })
                 }
             // }
