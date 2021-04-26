@@ -64,7 +64,7 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>직위</td>
-                      <td><input type="text" v-model="position" placeholder="직위 입력"/></td>
+                      <td><input type="text" v-model="rank" placeholder="직위 입력"/></td>
                     </tr>
                     <tr class="modal-table-body">
                       <td>역할</td>
@@ -117,7 +117,7 @@
           </div>
         <span slot="footer" v-on:click="UserInfoSetModal = false">
             <button class="button-cancle" v-on:click="userInfoCancle">취소</button>
-            <button class="button-add" v-on:click="addUserInfo(id,firstName,lastName,gender,team,position,role,inPassword,confirmPassword)">추가</button>
+            <button class="button-add" v-on:click="addUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword,confirmPassword)">추가</button>
         </span>
       </Modal>
 
@@ -172,7 +172,7 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>직위</td>
-                      <td><input type="text" v-model="position" placeholder="직위 입력"/></td>
+                      <td><input type="text" v-model="rank" placeholder="직위 입력"/></td>
                     </tr>
                     <tr class="modal-table-body">
                       <td>역할</td>
@@ -202,11 +202,11 @@
                 </tbody>
 
               </table>
-                      
+
           </div>
         <span slot="footer" v-on:click="UserInfoModifyModal = false">
             <button class="button-cancle" v-on:click="userInfoCancle">취소</button>
-            <button class="button-add" v-on:click="modifyUserInfo(id,firstName,lastName,gender,team,position,role)">수정</button>
+            <button class="button-add" v-on:click="modifyUserInfo(id,firstName,lastName,gender,team,rank,role)">수정</button>
         </span>
     </Modal>
 
@@ -233,10 +233,10 @@
                       <td></td>
                       <td><input type="checkbox" :value="todo.id" v-model="selected"></td>
                       <td>{{ i+1 }}</td>
-                      <td>{{ todo.id }}</td>
-                      <td>{{ todo.name }}</td>
+                      <td>{{ todo.idString }}</td>
+                      <td>{{ todo.firstName }} {{ todo.lastName }}</td>
                       <td>{{ todo.team }}</td>
-                      <td>{{ todo.position }}</td>
+                      <td>{{ todo.rank }}</td>
                       <td>{{ todo.role }}</td>
                   </tr>
               </tbody>
@@ -250,6 +250,7 @@
 <script>
 import Modal from '../../../common/Modal'
 import SideBar from '../../common/SideBar.vue'
+import axios from 'axios';
 
 export default {
     components:{
@@ -268,7 +269,7 @@ export default {
            inPassword:'',
            confirmPassword:'',
            team:'',
-           position:'',
+           rank:'',
            role:'',
            users:[],
            todos:[],
@@ -288,11 +289,10 @@ export default {
                 this.users = res.data
             })
         },
-        getTodos(){
-            this.$http.get('http://localhost:3000/todoData')
+        getTodos(){ // user list
+            axios.get('http://localhost:8888/api/user/list')
             .then((res) => {
-                console.log('getTodos:', res.data)
-                this.todos = res.data
+              this.todos = res.data.data
             })
         },
         getCCTVs(){
@@ -303,32 +303,31 @@ export default {
             })
         },
         select() {
-			this.selected = [];
-            if(!this.selectAll){
-                for(let i in this.todos){
-                    this.selected.push(this.todos[i].id)
+          this.selected = [];
+                if(!this.selectAll){
+                    for(let i in this.todos){
+                        this.selected.push(this.todos[i].id)
+                    }
                 }
-            }
-		},
+        },
         addUserInfoBtn(){
             this.userInfoSetModal = !this.userInfoSetModal;
         },
-        addUserInfo(id,firstName,lastName,gender,team,position,role,inPassword,confirmPassword){
-            // if(id && firstName && lastName && team && position && role){
+        addUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword,confirmPassword){
+            // if(id && firstName && lastName && team && rank && role){
                 if(inPassword!=confirmPassword){
                     alert("입력한 비밀번호와 확인 비밀번호가 다릅니다.")
                 }else{
-                    this.$http.post('http://localhost:3000/todoData',{
-                        id:id,
+                    this.$http.post('http://localhost:8888/api/user/add',{
+                        idString:id,
                         firstName:firstName,
                         lastName:lastName,
-                        name:firstName+lastName,
                         gender:gender,
-                        password:inPassword,
+                        encryptedPassword:inPassword,
                         team:team,
-                        position:position,
+                        rank:rank,
                         role:role,
-                        cctvGroups:this.cctvGroups
+                        // cctvGroups:this.cctvGroups
                     }).then((res) => {
                         this.todos.push(res.data);
                         this.id = '',
@@ -339,7 +338,7 @@ export default {
                         this.inPassword = '',
                         this.confirmPassword ='',
                         this.team = '',
-                        this.position = '',
+                        this.rank = '',
                         this.role = '',
                         this.cctvGroups=[];
                     })
@@ -358,7 +357,7 @@ export default {
                         this.lastName=todos[i].lastName;
                         this.gender=todos[i].gender;
                         this.team=todos[i].team;
-                        this.position=todos[i].position;
+                        this.rank=todos[i].rank;
                         this.role=todos[i].role;
                         this.cctvGroups=todos[i].cctvGroups;
                     }
@@ -369,8 +368,8 @@ export default {
                 alert("수정하실 사용자를 1명만 체크해 주세요")
             }
         },
-        modifyUserInfo(id,firstName,lastName,gender,team,position,role,inPassword){
-            // if(id && firstName && lastName && team && position && role){
+        modifyUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword){
+            // if(id && firstName && lastName && team && rank && role){
                 this.$http.patch('http://localhost:3000/todoData/'+id,{
                     id:id,
                     firstName:firstName,
@@ -379,7 +378,7 @@ export default {
                     gender:gender,
                     password:inPassword,
                     team:team,
-                    position:position,
+                    rank:rank,
                     role:role,
                     cctvGroups:this.cctvGroups
                 }).then((res) => {
@@ -390,7 +389,7 @@ export default {
                     this.name = '',
                     this.gender = '',
                     this.team = '',
-                    this.position = '',
+                    this.rank = '',
                     this.role = '',
                     this.cctvGroups=[];
                 })
@@ -405,7 +404,7 @@ export default {
             this.name = '',
             this.gender = '',
             this.team = '',
-            this.position = '',
+            this.rank = '',
             this.role = '',
             this.selected=[],
             this.cctvGroups=[];

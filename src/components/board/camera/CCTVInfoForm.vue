@@ -14,7 +14,7 @@
             <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </span>
     </div>
-      
+
     <div>
         <table class="table1">
             <colgroup>
@@ -68,6 +68,7 @@
 <script>
 import CCTVInsert from './Modals/CCTVInfo/CCTVInsertModal.vue';
 import CCTVUpdate from './Modals/CCTVInfo/CCTVUpdateModal.vue';
+import axios from 'axios';
 
 
 import SideBar from '../../common/SideBar.vue';
@@ -93,9 +94,9 @@ export default {
     },
     methods: {
         getCCTVInfo () {
-            this.$http.get('http://localhost:3000/cctv_infos')
+            axios.get('http://localhost:8888/api/cctv/cctvlist')
             .then((res) => {
-                this.CCTVInfos = res.data
+                this.CCTVInfos = res.data.data
             })
         },
         delCCTVInfo (checkedCCTV) {
@@ -112,7 +113,7 @@ export default {
                  })
                 }
             }
-            
+
             this.checkedCCTV = [];
         },
         checkAll() {
@@ -123,7 +124,7 @@ export default {
                 }
             }
         },
-        ShowInsertModal() {           
+        ShowInsertModal() {
                 this.showInsert = !this.showInsert;
         },
         ShowUpdateModal() {
@@ -137,7 +138,7 @@ export default {
                 this.CCTVId = this.checkedCCTV[0];
                 this.showUpdate = !this.showUpdate;
             }
-                
+
         },
     },
 
