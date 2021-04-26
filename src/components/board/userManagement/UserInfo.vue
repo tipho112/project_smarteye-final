@@ -329,7 +329,7 @@ export default {
                         role:role,
                         // cctvGroups:this.cctvGroups
                     }).then((res) => {
-                        this.todos.push(res.data);
+                        this.todos.push(res.data.data);
                         this.id = '',
                         this.firstName = '',
                         this.lastName = '',
@@ -341,6 +341,7 @@ export default {
                         this.rank = '',
                         this.role = '',
                         this.cctvGroups=[];
+                        // location.reload();
                     })
                 }
             // }
@@ -450,7 +451,7 @@ export default {
         this.getUserLogin();
         this.getTodos();
         this.getCCTVs();
-    },
+    }
 }
 </script>
 
