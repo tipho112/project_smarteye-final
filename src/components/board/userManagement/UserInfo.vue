@@ -43,10 +43,10 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>성별</td>
-                      <td><select class="modal-select1" name="selectingGender" v-bind="gender">
+                      <td><select class="modal-select1" @change="setGender($event)" name="selectingGender" v-bind="gender">
                             <option value="male">남성</option>
-                            <option value="weekly">여성</option>
-                            <option value="yearly">불명</option>
+                            <option value="female">여성</option>
+                            <option value="unknown">불명</option>
                           </select>
                       </td>
                     </tr>
@@ -318,6 +318,7 @@ export default {
                 if(inPassword!=confirmPassword){
                     alert("입력한 비밀번호와 확인 비밀번호가 다릅니다.")
                 }else{
+                  console.log("gender>>" + gender);
                     axios.post('http://localhost:8888/api/user/add',{
                         idString:id,
                         firstName:firstName,
@@ -330,6 +331,7 @@ export default {
                         // cctvGroups:this.cctvGroups
                     }).then((res) => {
                         this.todos.push(res.data.data);
+                        console.log(res.data.data);
                         this.id = '',
                         this.firstName = '',
                         this.lastName = '',
@@ -345,6 +347,9 @@ export default {
                 }
             // }
             this.userInfoSetModal = !this.userInfoSetModal;
+        },
+        setGender(event) {
+          this.gender = event.target.value;
         },
         modifyUserInfoBtn(length, id, todos){
             if(length==0){
