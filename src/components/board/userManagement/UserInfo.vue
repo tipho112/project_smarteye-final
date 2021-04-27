@@ -219,7 +219,7 @@
               <thead>
                   <tr class="table1-head-title">
                       <th></th>
-                      <th><input type="checkbox" v-model="selectAll" v-on:click="select" disabled></th>
+                      <th><input type="checkbox" v-model="selectAll" v-on:click="select"></th>
                       <th>번호</th>
                       <th>ID</th>
                       <th>이름</th>
@@ -272,12 +272,12 @@ export default {
            rank:'',
            role:'',
            users:[],
-           todos:[],
+           todos:[], // userlist
            getCCTVGroups:[],
            selectGroup:'',
            cctvGroups:[],
            selected:[],
-           selectAll:false
+           selectAll:false,
        }
    },
 
@@ -318,7 +318,6 @@ export default {
                 if(inPassword!=confirmPassword){
                     alert("입력한 비밀번호와 확인 비밀번호가 다릅니다.")
                 }else{
-                  console.log("gender>>" + gender);
                     axios.post('http://localhost:8888/api/user/add',{
                         idString:id,
                         firstName:firstName,
@@ -354,7 +353,7 @@ export default {
         modifyUserInfoBtn(length, id, todos){
             if(length==0){
                 alert("수정하실 사용자를 체크해 주세요")
-            }else if(length==1){
+            }else if(length==1){ // 한명만 체크 -> 수정
                 for(let i=0; i<todos.length; i++){
                     if(id==todos[i].id){
                         this.id=todos[i].id;
@@ -367,7 +366,6 @@ export default {
                         this.cctvGroups=todos[i].cctvGroups;
                     }
                 }
-                console.log(todos);
                 this.userInfoModifyModal = !this.userInfoModifyModal;
             }else{
                 alert("수정하실 사용자를 1명만 체크해 주세요")
@@ -375,17 +373,16 @@ export default {
         },
         modifyUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword){
             // if(id && firstName && lastName && team && rank && role){
-                this.$http.patch('http://localhost:3000/todoData/'+id,{
+                axios.post('http://localhost:8888/api/user/update',{
                     id:id,
                     firstName:firstName,
                     lastName:lastName,
-                    name:firstName+lastName,
                     gender:gender,
-                    password:inPassword,
+                    encryptedPassword:inPassword,
                     team:team,
                     rank:rank,
                     role:role,
-                    cctvGroups:this.cctvGroups
+                    // cctvGroups:this.cctvGroups
                 }).then((res) => {
                     this.getTodos()
                     this.id = '',
