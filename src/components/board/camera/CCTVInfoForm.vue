@@ -94,7 +94,7 @@ export default {
     },
     methods: {
         getCCTVInfo () {
-            axios.get('http://localhost:8888/api/cctv/cctvlist')
+            axios.get('http://localhost:8888/api/cctv/list')
             .then((res) => {
                 this.CCTVInfos = res.data.data
             })

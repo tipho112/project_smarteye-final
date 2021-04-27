@@ -74,22 +74,23 @@
                       <td>CCTV 그룹</td>
                       <td>
                         <select class="modal-select2" name="selectingGroup" v-model="selectGroup" >
-                          <option v-for="(cctvGroups,index) in getCCTVGroups" :key="index">
-                        {{cctvGroups.name}}
-                    </option>
+                          <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index">
+                            {{cctvGroups.name}}
+                            </option>
                         </select>
                         <button class="modal-groupaddBtn" v-on:click="addCCTVGroup(selectGroup)">추가</button>
                       </td>
                     </tr>
+
                     <tr>
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="cctv">
-                         {{cctv}}
-                <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
-                    <i class="closeModalBtn fas fa-times"></i>
-                </span>
-            </span>
+                        <span v-for="(cctv,index) in cctvGroups" :key="index">
+                         {{cctv.name}}
+                            <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
+                                <i class="closeModalBtn fas fa-times"></i>
+                            </span>
+                        </span>
                         <div class="groupbutton-container">
                         <!-- <span class="groupbutton">
                             그룹1
@@ -182,7 +183,7 @@
                       <td>CCTV 그룹</td>
                       <td>
                         <select class="modal-select2" name="selectingGroup" v-model="selectGroup" >
-                            <option v-for="(cctvGroups,index) in getCCTVGroups" :key="index">
+                            <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index" >
                                 {{cctvGroups.name}}
                             </option>
                         </select>
@@ -192,12 +193,12 @@
 
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="cctv">
-                {{cctv}}
-                <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
-                    <i class="closeModalBtn fas fa-times"></i>
-                </span>
-            </span>
+                        <span v-for="(cctv,index) in cctvGroups" :key="index">
+                            {{cctv.name}}
+                            <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
+                                <i class="closeModalBtn fas fa-times"></i>
+                            </span>
+                        </span>
                       </td>
                 </tbody>
 
@@ -273,8 +274,8 @@ export default {
            role:'',
            users:[],
            todos:[], // userlist
-           getCCTVGroups:[],
-           selectGroup:'',
+           CCTVGroupList:[],
+           selectGroup:[],
            cctvGroups:[],
            selected:[],
            selectAll:false,
@@ -295,11 +296,17 @@ export default {
               this.todos = res.data.data
             })
         },
-        getCCTVs(){
-            this.$http.get('http://localhost:3000/cctvgroup_infos')
+        getCCTVGroupList() { // get all cctv group
+          axios.get('http://localhost:8888/api/cctvgroup/list')
+          .then((res) => {
+            this.CCTVGroupList = res.data.data
+          })
+        },
+        getCCTVs(id){ // cctv group list with userid
+            axios.post('http://localhost:8888/api/cctvgroup/listwithuser', { id : id})
             .then((res) => {
-                console.log('getCCTVGroups:', res.data)
-                this.getCCTVGroups = res.data
+              console.log(res.data.data);
+                this.cctvGroups = res.data.data
             })
         },
         select() {
@@ -363,7 +370,7 @@ export default {
                         this.team=todos[i].team;
                         this.rank=todos[i].rank;
                         this.role=todos[i].role;
-                        this.cctvGroups=todos[i].cctvGroups;
+                        this.cctvGroups=this.getCCTVs(todos[i].id)
                     }
                 }
                 this.userInfoModifyModal = !this.userInfoModifyModal;
@@ -388,7 +395,6 @@ export default {
                     this.id = '',
                     this.firstName = '',
                     this.lastName = '',
-                    this.name = '',
                     this.gender = '',
                     this.team = '',
                     this.rank = '',
@@ -430,7 +436,7 @@ export default {
         ,
         addCCTVGroup(group){
             if(!this.isExist(group)){
-                this.cctvGroups.push(group);
+                this.cctvGroups.push({name: group});
                 this.cctvGroups.sort();
             }else{
                 alert("이미 사용자가 속해있는 CCTV그룹입니다.");
@@ -446,14 +452,13 @@ export default {
                     returnFlag = true;
                 }
             }
-            console.log(returnFlag);
             return returnFlag;
         }
     },
     mounted(){
         this.getUserLogin();
         this.getTodos();
-        this.getCCTVs();
+        this.getCCTVGroupList();
     }
 }
 </script>
