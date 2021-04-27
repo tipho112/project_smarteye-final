@@ -56,6 +56,7 @@
 <script>
 import RecoInsert from '../device/Modals/RecoInsert';
 import RecoUpdate from '../device/Modals/RecoUpdate.vue';
+
 import SideBar from '../../common/SideBar.vue';
 
 export default {
