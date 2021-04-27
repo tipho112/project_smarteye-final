@@ -399,7 +399,7 @@ export default {
             this.selected=[]
             this.userInfoModifyModal = !this.userInfoModifyModal;
         },
-        userInfoCancle(){
+        userInfoCancle(){ // Modal 창 닫기 버튼 함수
             this.id = '',
             this.firstName = '',
             this.lastName = '',
@@ -418,7 +418,9 @@ export default {
         },
         deleteUserInfoBtn(todo){
             for(let i=0; i<todo.length; i++){
-                this.$http.delete('http://localhost:3000/todoData/'+todo[i])
+                axios.post('http://localhost:8888/api/user/delete',{
+                    id: todo[i]
+                })
                 .then((res) => {
                     this.getTodos()
                 })
