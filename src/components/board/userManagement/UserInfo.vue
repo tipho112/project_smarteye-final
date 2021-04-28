@@ -85,7 +85,7 @@
                     <tr>
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="index">
+                        <span class="groupbutton" v-for="(cctv,index) in cctvGroups" :key="index">
                          {{cctv.name}}
                             <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
                                 <i class="closeModalBtn fas fa-times"></i>
@@ -183,8 +183,8 @@
                       <td>CCTV 그룹</td>
                       <td>
                         <select class="modal-select2" name="selectingGroup" v-model="selectGroup" >
-                            <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index" >
-                                {{cctvGroups.name}}
+                            <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index">
+                                {{ cctvGroups.name }}
                             </option>
                         </select>
                         <button class="modal-groupaddBtn" v-on:click="addCCTVGroup(selectGroup)">추가</button>
@@ -193,7 +193,7 @@
 
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="index">
+                        <span class="groupbutton" v-for="(cctv,index) in cctvGroups" :key="index">
                             {{cctv.name}}
                             <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
                                 <i class="closeModalBtn fas fa-times"></i>
@@ -435,6 +435,7 @@ export default {
         }
         ,
         addCCTVGroup(group){
+          console.log("ggg>>", group);
             if(!this.isExist(group)){
                 this.cctvGroups.push({name: group});
                 this.cctvGroups.sort();
