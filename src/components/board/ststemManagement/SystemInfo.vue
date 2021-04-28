@@ -178,5 +178,6 @@ export default{
   background-color: #818990;
   border: 1px solid #818990;
   margin-left: 10px;
+  color: #f0f0f0;
 }
 </style>
