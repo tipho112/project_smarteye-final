@@ -305,7 +305,6 @@ export default {
         getCCTVs(id){ // cctv group list with userid
             axios.post('http://localhost:8888/api/cctvgroup/listwithuser', { id : id})
             .then((res) => {
-              console.log(res.data.data);
                 this.cctvGroups = res.data.data
             })
         },
