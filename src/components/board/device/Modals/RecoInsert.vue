@@ -34,7 +34,7 @@
           <div class="modal-footer">
             <span name="footer">
               <button class="button-cancle" @click="$emit('close')">취소</button>
-              <button class="button-add" @click="updateRecoInfo(name, ip_address, vendor), $emit('close')" >추가</button>
+              <button class="button-add" @click="addRecoInfo(name, ip_address, vendor), $emit('close')" >추가</button>
             </span>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default {
             this.RecoInfos = res.data.data
         })
     },
-    updateRecoInfo(name, ip_address, vendor) {
+    addRecoInfo(name, ip_address, vendor) {
         if(name && ip_address && vendor){
             axios.post('http://localhost:8888/api/recoding/add', {
             name: name,

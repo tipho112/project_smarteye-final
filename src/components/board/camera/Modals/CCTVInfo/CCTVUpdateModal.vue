@@ -81,27 +81,27 @@
               <tbody>
                 <tr class="modal-table-body">
                   <td> RTSP Path </td>
-                  <td><input type="text" v-model="name" placeholder="RTSP Path 입력"/></td>
+                  <td><input type="text" v-model="rtsp_path" placeholder="RTSP Path 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> RTSP Port </td>
-                  <td><input type="text" v-model="name" placeholder="RTSP Port 입력"/></td>
+                  <td><input type="text" v-model="rtsp_port" placeholder="RTSP Port 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> ONVIF Path </td>
-                  <td><input type="text" v-model="name" placeholder="ONVIF Path 입력"/></td>
+                  <td><input type="text" v-model="onvif_profile" placeholder="ONVIF Path 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> ONVIF Port </td>
-                  <td><input type="text" v-model="name" placeholder="ONVIF Port 입력"/></td>
+                  <td><input type="text" v-model="onvif_port" placeholder="ONVIF Port 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> 사용자명 </td>
-                  <td><input type="text" v-model="name" placeholder="사용자명 입력"/></td>
+                  <td><input type="text" v-model="username" placeholder="사용자명 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> 비밀번호 </td>
-                  <td><input type="text" v-model="name" placeholder="비밀번호 입력"/></td>
+                  <td><input type="text" v-model="password" placeholder="비밀번호 입력"/></td>
                 </tr>
               </tbody>
             </table>
@@ -134,16 +134,19 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props : {
-    CCTVId: {
-      type: Number,
+    sendData: {
+      type: Array,
       required: true
     }
   },
   data() {
         return {
           CCTVInfos: [],
+          id: '',
           name: '',
           check1: false,
           check2: false,
@@ -164,82 +167,73 @@ export default {
           username: '',
           password: '',
           camera_type: '',
-          updated_at : "",
 
-          ptz_control_usage: 0,
-          alarm: 0,
-          emergency_bell: 0,
+          ptz_control_usage: false,
+          forwarded : false,
+          emergency_bell: false,
         }
   },
   mounted() {
     this.getCCTVInfo()
   },
-  beforeUpdate() {
-    this.setCheckboxData()
-  },
   methods: {
     getCCTVInfo () {
-      this.$http.get('http://localhost:3000/cctv_infos/' + this.CCTVId)
-      .then((res) => {
-          this.name= res.data.name,
-          this.ptz_control_usage= res.data.ptz_control_usage,
-          this.alarm= res.data.alarm,
-          this.emergency_bell= res.data.emergency_bell,
-          this.comment= res.data.comment,
-          this.ip_address= res.data.ip_address,
-          this.area1= res.data.area1,
-          this.area2= res.data.area2,
-          this.area3= res.data.area3,
-          this.latitude= res.data.latitude,
-          this.longitude= res.data.longitude,
-          this.manufacturer= res.data.manufacturer,
-          this.model= res.data.model,
-          this.rtsp_path= res.data.rtsp_path,
-          this.rtsp_port= res.data.rtsp_port,
-          this.onvif_profile= res.data.onvif_profile,
-          this.onvif_port= res.data.onvif_port,
-          this.username= res.data.username,
-          this.password= res.data.password,
-          this.camera_type= res.data.camera_type
-      })
-    },
-    setCheckboxData() {
-      if(this.ptz_control_usage == 1) {
+      this.id = this.sendData.id
+      this.name= this.sendData.name
+      this.ptz_control_usage= this.sendData.ptz_control_usage,
+      this.forwarded= this.sendData.forwarded,
+      this.emergency_bell= this.sendData.emergency_bell,
+      this.comment= this.sendData.comment,
+      this.ip_address= this.sendData.ip_address,
+      this.area1= this.sendData.area1,
+      this.area2= this.sendData.area2,
+      this.area3= this.sendData.area3,
+      this.latitude= this.sendData.latitude,
+      this.longitude= this.sendData.longitude,
+      this.manufacturer= this.sendData.manufacturer,
+      this.model= this.sendData.model,
+      this.rtsp_path= this.sendData.rtsp_path,
+      this.rtsp_port= this.sendData.rtsp_port,
+      this.onvif_profile= this.sendData.onvif_profile,
+      this.onvif_port= this.sendData.onvif_port,
+      this.username= this.sendData.username,
+      this.password= this.sendData.password,
+      this.camera_type= this.sendData.camera_type
+
+      if(this.ptz_control_usage == 1 || this.ptz_control_usage == true) {
         this.check1 = true;
       }
       else {
         this.check1 = false;
       }
       
-      if(this.alarm == 1) {
+      if(this.forwarded == 1 || this.forwarded == true) {
         this.check2 = true;
       }
       else {
         this.check2 = false;
       }
 
-      if(this.emergency_bell == 1) {
+      if(this.emergency_bell == 1 || this.emergency_bell == true) {
         this.check3 = true;
       }
       else {
         this.check3 = false;
       }
-
-      console.log(this.check1 + this.check2 + this.check3);
     },
     updateCCTVInfo(name, check1, check2, check3, comment, ip_address, area1, area2, area3, latitude, longitude, manufacturer, model, rtsp_path, rtsp_port, onvif_profile, onvif_port, username, password, camera_type) {
       if(check1 == true) {
-        this.ptz_control_usage = 1;
+        this.ptz_control_usage = true;
       }
       else {
-        this.ptz_control_usage = 0;
+        this.ptz_control_usage = false;
       }
 
       if(check2 == true) {
-        this.alarm = 1;
+        this.forwarded = 1;
       }
       else {
-        this.alarm = 0;
+        this.forwarded = 0;
       }
 
       if(check3 == true) {
@@ -249,11 +243,12 @@ export default {
         this.emergency_bell = 0;
       }
       
-      if(name && check1 && check2 && check3 && comment && ip_address && area1 && area2 && area3 && latitude && longitude && manufacturer && model && rtsp_path && rtsp_port && onvif_profile && onvif_port && username && password && camera_type){
-        this.$http.patch('http://localhost:3000/cctv_infos/'+this.CCTVId, {
+      if(name || comment || ip_address || area1 || area2 || area3 || latitude || longitude || manufacturer || model || rtsp_path || rtsp_port || onvif_profile || onvif_port || username || password || camera_type){
+        axios.post('http://localhost:8888/api/cctv/update', {
+          id: this.id,
           name: name,
           ptz_control_usage: this.ptz_control_usage,
-          alarm: this.alarm,
+          forwarded: this.forwarded,
           emergency_bell: this.emergency_bell,
           comment: comment,
           ip_address: ip_address,
@@ -273,7 +268,12 @@ export default {
           camera_type: camera_type,
         })
         .then((res) => {
-          this.CCTVInfos.push(res.data); 
+          if(res.data.result == "success") {
+            alert("업데이트 성공");
+          }
+          else {
+            alert("업데이트 실패");
+          }
         })
       }
   }

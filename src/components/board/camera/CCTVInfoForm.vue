@@ -43,8 +43,8 @@
                         <td><input type="checkbox" :value="CCTVInfo.id" v-model="checkedCCTV"></td>
                         <td><span> {{ i+1 }}  </span></td>
                         <td>
-                            <span v-if="CCTVInfo.ptz_control_usage == 1"> 정상 </span>
-                            <span v-else-if="CCTVInfo.ptz_control_usage == 0"> 고장 </span>
+                            <span v-if="CCTVInfo.ptz_control_usage == 1"> 사용 </span>
+                            <span v-else-if="CCTVInfo.ptz_control_usage == 0"> 비사용 </span>
                         </td>
                         <td><span> {{ CCTVInfo.name }} </span></td>
                         <td><span> {{ CCTVInfo.area1 }} {{ CCTVInfo.area2 }} {{ CCTVInfo.area3 }}</span></td>
@@ -61,7 +61,7 @@
     </div>
 
     <CCTVInsert v-if="showInsert" @close="showInsert = false, getCCTVInfo()"></CCTVInsert>
-    <CCTVUpdate :CCTVId.sync="CCTVId" v-if="showUpdate" @close="showUpdate = false, getCCTVInfo()"></CCTVUpdate>
+    <CCTVUpdate :sendData.sync="sendData" v-if="showUpdate" @close="showUpdate = false, getCCTVInfo()"></CCTVUpdate>
 </div>
 </template>
 
@@ -86,6 +86,7 @@ export default {
         return {
             CCTVInfos: [],
             checkedCCTV: [],
+            sendData: [],
             showInsert: false,
             showUpdate: false,
             selectAll : false,
@@ -107,7 +108,9 @@ export default {
             else {
                 for(let i = 0; i < checkedCCTV.length; i++)
                 {
-                    this.$http.delete('http://localhost:3000/cctv_infos/'+checkedCCTV[i])
+                    axios.post('http://localhost:8888/api/cctv/delete', {
+                        id:checkedCCTV[i]
+                    })
                     .then((res) => {
                     this.getCCTVInfo()
                  })
@@ -135,10 +138,13 @@ export default {
                 alert('녹화장치를 하나만 선택해주세요.')
             }
             else {
-                this.CCTVId = this.checkedCCTV[0];
+                for(let i = 0; i < this.CCTVInfos.length; i++) {
+                    if(this.checkedCCTV[0] == this.CCTVInfos[i].id) {
+                        this.sendData = this.CCTVInfos[i];
+                    }
+                }
                 this.showUpdate = !this.showUpdate;
             }
-
         },
     },
 
