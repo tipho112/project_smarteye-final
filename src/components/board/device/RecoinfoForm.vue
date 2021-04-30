@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table1-body" v-for="(RecoInfo, i) in RecoInfos" :key="i" >
+                    <tr class="table1-body" v-for="(RecoInfo, i) in RecoInfos" :key="i">
                     <th></th>
                     <td><input type="checkbox" :value="RecoInfo.id" v-model="checkedReco"></td>
                     <td> {{ i+1 }} </td>
@@ -81,6 +81,7 @@ export default {
             recoName: '',
             recoIP : '',
             recoVendor : '',
+            searchName: '',
         }
     },
     methods: {

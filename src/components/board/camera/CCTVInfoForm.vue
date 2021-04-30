@@ -14,7 +14,7 @@
             <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </span>
     </div>
-
+    <span><input type="text" v-model="searchName" placeholder="검색할 CCTV 이름"></span>
     <div>
         <table class="table1">
             <colgroup>
@@ -38,7 +38,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr class="table1-body" v-for="(CCTVInfo, i) in CCTVInfos" :key="i">
+                    <tr v-for="(CCTVInfo, i) in CCTVInfos" :key="i" v-if="CCTVInfo.name.includes(searchName)" v-bind:class="{'table1-body2' : CCTVInfo.ptz_control_usage == 0, 'table1-body1' : CCTVInfo.ptz_control_usage != 0}" >
                         <td></td>
                         <td><input type="checkbox" :value="CCTVInfo.id" v-model="checkedCCTV"></td>
                         <td><span> {{ i+1 }}  </span></td>
@@ -90,7 +90,8 @@ export default {
             showInsert: false,
             showUpdate: false,
             selectAll : false,
-            CCTVId: ''
+            CCTVId: '',
+            searchName: '',
         }
     },
     methods: {
@@ -209,4 +210,20 @@ export default {
   color: #ffffff;
 }
 
+.table1-body1{
+      overflow:scroll;
+      text-align: center;
+      background-color: #eff4f8;
+      height: 50px;
+      vertical-align: middle;
+  }
+
+.table1-body2{
+      overflow:scroll;
+      text-align: center;
+      background-color: #eff4f8;
+      height: 50px;
+      vertical-align: middle;
+      color: red;
+  }
 </style>
