@@ -99,7 +99,7 @@ body .table1-body td {
   letter-spacing: 0px;
   color: #0b6ad5;
 }
-.groupremove {
+.cctvGroupRemove {
   color: #0b6ad5;
   float: right;
 }

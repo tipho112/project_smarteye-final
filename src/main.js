@@ -9,14 +9,17 @@ import axios from 'axios'
 //moment
 import vueMoment from 'vue-moment'
 
+// google map
+import vueGoogleMapWrapper from '@/plugins/vue-google-map-wrapper'
+
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 Vue.use(vueMoment)
 
-
+Vue.use(vueGoogleMapWrapper, { apiKey: 'AIzaSyAXHPv-NrUNy7TOE0CuAg5JN04fg6IRJLU' })
 
 /* eslint-disable no-new */
 new Vue({
   render: h => h(App)
-  ,router 
+  ,router
 }).$mount('#app')

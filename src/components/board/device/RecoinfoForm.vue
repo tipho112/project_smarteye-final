@@ -32,23 +32,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table1-body" v-for="(RecoInfo, i) in RecoInfos" :key="i" >
+                    <tr class="table1-body" v-for="(RecoInfo, i) in RecoInfos" :key="i">
                     <th></th>
                     <td><input type="checkbox" :value="RecoInfo.id" v-model="checkedReco"></td>
-                    <td><span> {{ i+1 }}  </span></td>
-                    <td><span> {{ RecoInfo.name }} </span></td>
-                    <td><span> {{ RecoInfo.ip_address }} </span></td>
-                    <td><span> {{ RecoInfo.vendor }} </span></td>
+                    <td> {{ i+1 }} </td>
+                    <td> {{ RecoInfo.name }} </td>
+                    <td> {{ RecoInfo.ip_address }} </td>
+                    <td> {{ RecoInfo.vendor }} </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <RecoInsert v-if="InsertModal" @close="InsertModal = false" v-on:close="getRecoInfo()">
+    <RecoInsert v-if="InsertModal" @close="getRecoInfo(), InsertModal = false">
     </RecoInsert>
 
-    <RecoUpdate :recoId.sync="recoId" v-if="UpdateModal" @close="UpdateModal = false" v-on:close="getRecoInfo()">
+    <RecoUpdate :recoId.sync="recoId" :recoName.sync="recoName" :recoIP.sync="recoIP" :recoVendor.sync="recoVendor" v-if="UpdateModal" @close="UpdateModal = false" v-on:close="getRecoInfo()">
     </RecoUpdate>
 </div>
 </template>
@@ -56,15 +56,17 @@
 <script>
 import RecoInsert from '../device/Modals/RecoInsert';
 import RecoUpdate from '../device/Modals/RecoUpdate.vue';
+import axios from 'axios';
+
 import SideBar from '../../common/SideBar.vue';
 
 export default {
     components:{
         SideBar
     },
-    updated() {
-        this.getRecoInfo()
-    },
+    // updated() {
+    //     this.getRecoInfo()
+    // },
     mounted() {
         this.getRecoInfo()
     },
@@ -76,6 +78,10 @@ export default {
             RecoInfos:[],
             checkedReco:[],
             recoId: '',
+            recoName: '',
+            recoIP : '',
+            recoVendor : '',
+            searchName: '',
         }
     },
     methods: {
@@ -88,25 +94,32 @@ export default {
             }
         },
         getRecoInfo () {
-            this.$http.get('http://localhost:3000/recoding_infos')
+            if(this.RecoInfos.length > 0) {
+                this.RecoInfos = []; 
+            }
+
+            axios.get('http://localhost:8888/api/recoding/list')
             .then((res) => {
-                this.RecoInfos = res.data
+                this.RecoInfos = res.data.data
             })
         },
         delRecoInfo (checkedReco) {
-            if(this.checkedReco.length == 0)
+            if(checkedReco.length == 0)
             {
                 alert('녹화장치를 선택하세요')
             }
             else {
                 for(let i = 0; i < checkedReco.length; i++)
                 {
-                    this.$http.delete('http://localhost:3000/recoding_infos/'+checkedReco[i])
-                .then((res) => {
-                    this.getRecoInfo()
-                 })
+                    axios.post('http://localhost:8888/api/recoding/delete', {
+                        id: checkedReco[i]
+                    })
+                    .then((res) => {
+                        this.getRecoInfo()
+                    })
                 }
             }
+            
             
             this.checkedReco = [];
         },
@@ -122,6 +135,13 @@ export default {
             }
             else {
                 this.recoId = this.checkedReco[0];
+                for(let i = 0; i < this.RecoInfos.length; i++) {
+                    if(this.recoId == this.RecoInfos[i].id) {
+                        this.recoName = this.RecoInfos[i].name;
+                        this.recoIP = this.RecoInfos[i].ip_address;
+                        this.recoVendor = this.RecoInfos[i].vendor
+                    }
+                }
                 this.UpdateModal = !this.UpdateModal;
             }
         }

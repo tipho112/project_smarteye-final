@@ -26,6 +26,9 @@ import RegionalStatistics from '../components/board/statistics/RegionalStatistic
 import FailureReportStatistics from '../components/board/statistics/FailureReportStatistics'
 import ReportSetting from '../components/board/statistics/ReportSetting'
 
+// 지도 api 샘플
+import GoogleMapLoader from '../components/board/statistics/GoogleMapLoader'
+
 // 로그 -> 이벤트 로그, 시스템 로그
 import EventLog from '../components/board/logManagement/EventLog'
 import SystemLog from '../components/board/logManagement/SystemLog'
@@ -67,7 +70,7 @@ export default new Router({
       path: '/CCTVGroupForm',
       name: 'CCTVGroupForm',
       component: CCTVGroupForm
-    }, 
+    },
     { // 2-3 집중관제 그룹
       path: '/ControlGroupForm',
       name: 'ControlGroupForm',
@@ -82,7 +85,7 @@ export default new Router({
       path: '/FixReportForm',
       name: 'FixReportForm',
       component: FixReportForm
-    },    
+    },
     { // 2-6 카메라 상태 확인
       path: '/CameraHealthForm',
       name: 'CameraHealthForm',
@@ -115,7 +118,7 @@ export default new Router({
     { // 5-4
       path: '/FailureReportStatistics',
       name: FailureReportStatistics,
-      component: FailureReportStatistics 
+      component: FailureReportStatistics
     },
 
     { // 5-5 고장 리포트 설정
@@ -135,12 +138,17 @@ export default new Router({
       path: '/systemlog',
       name: SystemLog,
       component: SystemLog
-    },  
+    },
     {
       path:'/systeminfo',
       name: SystemInfo,
       component: SystemInfo
+    },
+    {
+      path:'/map',
+      name: GoogleMapLoader,
+      component: GoogleMapLoader
     }
-   
+
   ]
 })

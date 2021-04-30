@@ -43,10 +43,10 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>성별</td>
-                      <td><select class="modal-select1" name="selectingGender" v-bind="gender">
+                      <td><select class="modal-select1" @change="setGender($event)" name="selectingGender" v-bind="gender">
                             <option value="male">남성</option>
-                            <option value="weekly">여성</option>
-                            <option value="yearly">불명</option>
+                            <option value="female">여성</option>
+                            <option value="unknown">불명</option>
                           </select>
                       </td>
                     </tr>
@@ -64,7 +64,7 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>직위</td>
-                      <td><input type="text" v-model="position" placeholder="직위 입력"/></td>
+                      <td><input type="text" v-model="rank" placeholder="직위 입력"/></td>
                     </tr>
                     <tr class="modal-table-body">
                       <td>역할</td>
@@ -74,22 +74,23 @@
                       <td>CCTV 그룹</td>
                       <td>
                         <select class="modal-select2" name="selectingGroup" v-model="selectGroup" >
-                          <option v-for="(cctvGroups,index) in getCCTVGroups" :key="index">
-                        {{cctvGroups.name}}
-                    </option>
+                          <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index">
+                            {{cctvGroups.name}}
+                            </option>
                         </select>
                         <button class="modal-groupaddBtn" v-on:click="addCCTVGroup(selectGroup)">추가</button>
                       </td>
                     </tr>
+
                     <tr>
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="cctv">
-                         {{cctv}}
-                <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
-                    <i class="closeModalBtn fas fa-times"></i>
-                </span>
-            </span>
+                        <span class="groupbutton" v-for="(cctv,index) in cctvGroups" :key="index">
+                         {{cctv.name}}
+                            <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
+                                <i class="closeModalBtn fas fa-times"></i>
+                            </span>
+                        </span>
                         <div class="groupbutton-container">
                         <!-- <span class="groupbutton">
                             그룹1
@@ -117,7 +118,7 @@
           </div>
         <span slot="footer" v-on:click="UserInfoSetModal = false">
             <button class="button-cancle" v-on:click="userInfoCancle">취소</button>
-            <button class="button-add" v-on:click="addUserInfo(id,firstName,lastName,gender,team,position,role,inPassword,confirmPassword)">추가</button>
+            <button class="button-add" v-on:click="addUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword,confirmPassword)">추가</button>
         </span>
       </Modal>
 
@@ -172,7 +173,7 @@
                     </tr>
                     <tr class="modal-table-body">
                       <td>직위</td>
-                      <td><input type="text" v-model="position" placeholder="직위 입력"/></td>
+                      <td><input type="text" v-model="rank" placeholder="직위 입력"/></td>
                     </tr>
                     <tr class="modal-table-body">
                       <td>역할</td>
@@ -182,8 +183,8 @@
                       <td>CCTV 그룹</td>
                       <td>
                         <select class="modal-select2" name="selectingGroup" v-model="selectGroup" >
-                            <option v-for="(cctvGroups,index) in getCCTVGroups" :key="index">
-                                {{cctvGroups.name}}
+                            <option v-for="(cctvGroups,index) in CCTVGroupList" :key="index">
+                                {{ cctvGroups.name }}
                             </option>
                         </select>
                         <button class="modal-groupaddBtn" v-on:click="addCCTVGroup(selectGroup)">추가</button>
@@ -192,21 +193,21 @@
 
                       <td></td>
                       <td>
-                        <span v-for="(cctv,index) in cctvGroups" :key="cctv">
-                {{cctv}}
-                <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
-                    <i class="closeModalBtn fas fa-times"></i>
-                </span>
-            </span>
+                        <span class="groupbutton" v-for="(cctv,index) in cctvGroups" :key="index">
+                            {{cctv.name}}
+                            <span class="cctvGroupRemove" type="button" v-on:click="removeCCTV(index)">
+                                <i class="closeModalBtn fas fa-times"></i>
+                            </span>
+                        </span>
                       </td>
                 </tbody>
 
               </table>
-                      
+
           </div>
         <span slot="footer" v-on:click="UserInfoModifyModal = false">
             <button class="button-cancle" v-on:click="userInfoCancle">취소</button>
-            <button class="button-add" v-on:click="modifyUserInfo(id,firstName,lastName,gender,team,position,role)">수정</button>
+            <button class="button-add" v-on:click="modifyUserInfo(id,firstName,lastName,gender,team,rank,role)">수정</button>
         </span>
     </Modal>
 
@@ -219,7 +220,7 @@
               <thead>
                   <tr class="table1-head-title">
                       <th></th>
-                      <th><input type="checkbox" v-model="selectAll" v-on:click="select" disabled></th>
+                      <th><input type="checkbox" v-model="selectAll" v-on:click="select"></th>
                       <th>번호</th>
                       <th>ID</th>
                       <th>이름</th>
@@ -233,10 +234,10 @@
                       <td></td>
                       <td><input type="checkbox" :value="todo.id" v-model="selected"></td>
                       <td>{{ i+1 }}</td>
-                      <td>{{ todo.id }}</td>
-                      <td>{{ todo.name }}</td>
+                      <td>{{ todo.idString }}</td>
+                      <td>{{ todo.firstName }} {{ todo.lastName }}</td>
                       <td>{{ todo.team }}</td>
-                      <td>{{ todo.position }}</td>
+                      <td>{{ todo.rank }}</td>
                       <td>{{ todo.role }}</td>
                   </tr>
               </tbody>
@@ -250,6 +251,7 @@
 <script>
 import Modal from '../../../common/Modal'
 import SideBar from '../../common/SideBar.vue'
+import axios from 'axios';
 
 export default {
     components:{
@@ -268,15 +270,15 @@ export default {
            inPassword:'',
            confirmPassword:'',
            team:'',
-           position:'',
+           rank:'',
            role:'',
            users:[],
-           todos:[],
-           getCCTVGroups:[],
-           selectGroup:'',
+           todos:[], // userlist
+           CCTVGroupList:[],
+           selectGroup:[],
            cctvGroups:[],
            selected:[],
-           selectAll:false
+           selectAll:false,
        }
    },
 
@@ -288,49 +290,53 @@ export default {
                 this.users = res.data
             })
         },
-        getTodos(){
-            this.$http.get('http://localhost:3000/todoData')
+        getTodos(){ // user list
+            axios.get('http://localhost:8888/api/user/list')
             .then((res) => {
-                console.log('getTodos:', res.data)
-                this.todos = res.data
+              this.todos = res.data.data
             })
         },
-        getCCTVs(){
-            this.$http.get('http://localhost:3000/cctvgroup_infos')
+        getCCTVGroupList() { // get all cctv group
+          axios.get('http://localhost:8888/api/cctvgroup/list')
+          .then((res) => {
+            this.CCTVGroupList = res.data.data
+          })
+        },
+        getCCTVs(id){ // cctv group list with userid
+            axios.post('http://localhost:8888/api/cctvgroup/listwithuser', { id : id})
             .then((res) => {
-                console.log('getCCTVGroups:', res.data)
-                this.getCCTVGroups = res.data
+                this.cctvGroups = res.data.data
             })
         },
         select() {
-			this.selected = [];
-            if(!this.selectAll){
-                for(let i in this.todos){
-                    this.selected.push(this.todos[i].id)
+          this.selected = [];
+                if(!this.selectAll){
+                    for(let i in this.todos){
+                        this.selected.push(this.todos[i].id)
+                    }
                 }
-            }
-		},
+        },
         addUserInfoBtn(){
             this.userInfoSetModal = !this.userInfoSetModal;
         },
-        addUserInfo(id,firstName,lastName,gender,team,position,role,inPassword,confirmPassword){
-            // if(id && firstName && lastName && team && position && role){
+        addUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword,confirmPassword){
+            // if(id && firstName && lastName && team && rank && role){
                 if(inPassword!=confirmPassword){
                     alert("입력한 비밀번호와 확인 비밀번호가 다릅니다.")
                 }else{
-                    this.$http.post('http://localhost:3000/todoData',{
-                        id:id,
+                    axios.post('http://localhost:8888/api/user/add',{
+                        idString:id,
                         firstName:firstName,
                         lastName:lastName,
-                        name:firstName+lastName,
                         gender:gender,
-                        password:inPassword,
+                        encryptedPassword:inPassword,
                         team:team,
-                        position:position,
+                        rank:rank,
                         role:role,
-                        cctvGroups:this.cctvGroups
+                        // cctvGroups:this.cctvGroups
                     }).then((res) => {
-                        this.todos.push(res.data);
+                        this.todos.push(res.data.data);
+                        console.log(res.data.data);
                         this.id = '',
                         this.firstName = '',
                         this.lastName = '',
@@ -339,7 +345,7 @@ export default {
                         this.inPassword = '',
                         this.confirmPassword ='',
                         this.team = '',
-                        this.position = '',
+                        this.rank = '',
                         this.role = '',
                         this.cctvGroups=[];
                     })
@@ -347,10 +353,13 @@ export default {
             // }
             this.userInfoSetModal = !this.userInfoSetModal;
         },
+        setGender(event) {
+          this.gender = event.target.value;
+        },
         modifyUserInfoBtn(length, id, todos){
             if(length==0){
                 alert("수정하실 사용자를 체크해 주세요")
-            }else if(length==1){
+            }else if(length==1){ // 한명만 체크 -> 수정
                 for(let i=0; i<todos.length; i++){
                     if(id==todos[i].id){
                         this.id=todos[i].id;
@@ -358,39 +367,36 @@ export default {
                         this.lastName=todos[i].lastName;
                         this.gender=todos[i].gender;
                         this.team=todos[i].team;
-                        this.position=todos[i].position;
+                        this.rank=todos[i].rank;
                         this.role=todos[i].role;
-                        this.cctvGroups=todos[i].cctvGroups;
+                        this.cctvGroups=this.getCCTVs(todos[i].id)
                     }
                 }
-                console.log(todos);
                 this.userInfoModifyModal = !this.userInfoModifyModal;
             }else{
                 alert("수정하실 사용자를 1명만 체크해 주세요")
             }
         },
-        modifyUserInfo(id,firstName,lastName,gender,team,position,role,inPassword){
-            // if(id && firstName && lastName && team && position && role){
-                this.$http.patch('http://localhost:3000/todoData/'+id,{
+        modifyUserInfo(id,firstName,lastName,gender,team,rank,role,inPassword){
+            // if(id && firstName && lastName && team && rank && role){
+                axios.post('http://localhost:8888/api/user/update',{
                     id:id,
                     firstName:firstName,
                     lastName:lastName,
-                    name:firstName+lastName,
                     gender:gender,
-                    password:inPassword,
+                    encryptedPassword:inPassword,
                     team:team,
-                    position:position,
+                    rank:rank,
                     role:role,
-                    cctvGroups:this.cctvGroups
+                    // cctvGroups:this.cctvGroups
                 }).then((res) => {
                     this.getTodos()
                     this.id = '',
                     this.firstName = '',
                     this.lastName = '',
-                    this.name = '',
                     this.gender = '',
                     this.team = '',
-                    this.position = '',
+                    this.rank = '',
                     this.role = '',
                     this.cctvGroups=[];
                 })
@@ -398,14 +404,14 @@ export default {
             this.selected=[]
             this.userInfoModifyModal = !this.userInfoModifyModal;
         },
-        userInfoCancle(){
+        userInfoCancle(){ // Modal 창 닫기 버튼 함수
             this.id = '',
             this.firstName = '',
             this.lastName = '',
             this.name = '',
             this.gender = '',
             this.team = '',
-            this.position = '',
+            this.rank = '',
             this.role = '',
             this.selected=[],
             this.cctvGroups=[];
@@ -417,7 +423,9 @@ export default {
         },
         deleteUserInfoBtn(todo){
             for(let i=0; i<todo.length; i++){
-                this.$http.delete('http://localhost:3000/todoData/'+todo[i])
+                axios.post('http://localhost:8888/api/user/delete',{
+                    id: todo[i]
+                })
                 .then((res) => {
                     this.getTodos()
                 })
@@ -426,8 +434,9 @@ export default {
         }
         ,
         addCCTVGroup(group){
+          console.log("ggg>>", group);
             if(!this.isExist(group)){
-                this.cctvGroups.push(group);
+                this.cctvGroups.push({name: group});
                 this.cctvGroups.sort();
             }else{
                 alert("이미 사용자가 속해있는 CCTV그룹입니다.");
@@ -443,15 +452,14 @@ export default {
                     returnFlag = true;
                 }
             }
-            console.log(returnFlag);
             return returnFlag;
         }
     },
     mounted(){
         this.getUserLogin();
         this.getTodos();
-        this.getCCTVs();
-    },
+        this.getCCTVGroupList();
+    }
 }
 </script>
 

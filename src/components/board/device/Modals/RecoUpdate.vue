@@ -44,11 +44,24 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   props : {
     recoId: {
       type: Number,
+      required: true
+    },
+    recoName: {
+      type: String,
+      required: true
+    },
+    recoIP: {
+      type: String,
+      required: true
+    },
+    recoVendor: {
+      type: String,
       required: true
     }
   },
@@ -60,30 +73,31 @@ export default {
             vendor: '',
         }
   },
-  mounted() {
+  created() {
     this.getRecoInfo()
   },
   methods: {
     getRecoInfo () {
-      this.$http.get('http://localhost:3000/recoding_infos/'+this.recoId)
-      .then((res) => {
-          this.name = res.data.name
-          this.ip_address = res.data.ip_address
-          this.vendor = res.data.vendor
-      })
+      this.name = this.recoName
+      this.ip_address = this.recoIP
+      this.vendor = this.recoVendor
+
+
+      console.log(this.recoId, this.name, this.ip_address, this.vendor)
     },
     updateRecoInfo(name, ip_address, vendor) {
         if(name && ip_address && vendor){
-            this.$http.patch('http://localhost:3000/recoding_infos/'+this.recoId, {
+            axios.post('http://localhost:8888/api/recoding/update',  {
+            id : this.recoId,
             name: name,
             ip_address: ip_address,
             vendor: vendor
             })
             .then((res) => {
-            this.RecoInfos.push(res.data);
-            this.name = '',
-            this.ip_address = '',
-            this.vendor = '';
+              this.RecoInfos.push(res.data);
+              this.name = '',
+              this.ip_address = '',
+              this.vendor = '';
             })
         }
     },

@@ -36,33 +36,33 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   props : {
-    group_id: {
-      type: Number,
+    groupData: {
+      type: Array,
       required: true
     }
   },
   data() {
-        return {
-            groupData: [],
-            name: '',
-        }
+    return {
+        id: '',
+        name: '',
+    }
   },
   mounted() {
     this.getGroupData()
   },
   methods: {
     getGroupData () {
-      this.$http.get('http://localhost:3000/cctvgroup_infos/'+this.group_id)
-      .then((res) => {
-          this.name = res.data.name;
-      })
+      this.id = this.groupData.id
+      this.name = this.groupData.name
     },
     updateGroupData(name) {
         if(name){
-            this.$http.patch('http://localhost:3000/cctvgroup_infos/'+this.group_id, {
+            axios.post('http://localhost:8888/api/cctvgroup/update', {
+            id: this.id,
             name: name
             })
             .then((res) => {

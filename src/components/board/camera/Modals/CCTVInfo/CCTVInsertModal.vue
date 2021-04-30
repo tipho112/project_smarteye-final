@@ -81,27 +81,27 @@
               <tbody>
                 <tr class="modal-table-body">
                   <td> RTSP Path </td>
-                  <td><input type="text" v-model="name" placeholder="RTSP Path 입력"/></td>
+                  <td><input type="text" v-model="rtsp_path" placeholder="RTSP Path 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> RTSP Port </td>
-                  <td><input type="text" v-model="name" placeholder="RTSP Port 입력"/></td>
+                  <td><input type="text" v-model="rtsp_port" placeholder="RTSP Port 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> ONVIF Path </td>
-                  <td><input type="text" v-model="name" placeholder="ONVIF Path 입력"/></td>
+                  <td><input type="text" v-model="onvif_profile" placeholder="ONVIF Path 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> ONVIF Port </td>
-                  <td><input type="text" v-model="name" placeholder="ONVIF Port 입력"/></td>
+                  <td><input type="text" v-model="onvif_port" placeholder="ONVIF Port 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> 사용자명 </td>
-                  <td><input type="text" v-model="name" placeholder="사용자명 입력"/></td>
+                  <td><input type="text" v-model="username" placeholder="사용자명 입력"/></td>
                 </tr>
                   <tr class="modal-table-body">
                   <td> 비밀번호 </td>
-                  <td><input type="text" v-model="name" placeholder="비밀번호 입력"/></td>
+                  <td><input type="text" v-model="password" placeholder="비밀번호 입력"/></td>
                 </tr>
               </tbody>
             </table>
@@ -134,6 +134,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
         return {
@@ -158,49 +160,40 @@ export default {
           username: '',
           password: '',
           camera_type: '',
-          manage_port: '',
-          forwarded : 0,
-          updated_at : "",
 
-          ptz_control_usage: 1,
-          alarm: 1,
-          emergency_bell: 1,
-          control_group: false,
-          reporter: '',
-          reporter_comment: '',
-          health_comment : '',
-          user_comment : '',
-          group_id: 0
+          ptz_control_usage: false,
+          forwarded : false,
+          emergency_bell: false,
         }
   },
   methods: {
     addCCTVInfo(name, check1, check2, check3, comment, ip_address, area1, area2, area3, latitude, longitude, manufacturer, model, rtsp_path, rtsp_port, onvif_profile, onvif_port, username, password, camera_type) {
       if(check1 == true) {
-        this.ptz_control_usage = 1;
+        this.ptz_control_usage = true;
       }
       else {
-        this.ptz_control_usage = 0;
+        this.ptz_control_usage = false;
       }
 
       if(check2 == true) {
-        this.alarm = 1;
+        this.forwarded = true;
       }
       else {
-        this.alarm = 0;
+        this.forwarded = false;
       }
 
       if(check3 == true) {
-        this.emergency_bell = 1;
+        this.emergency_bell = true;
       }
       else {
-        this.emergency_bell = 0;
+        this.emergency_bell = false;
       }
       
       if(name && comment && ip_address && area1 && area2 && area3 && latitude && longitude && manufacturer && model && rtsp_path && rtsp_port && onvif_profile && onvif_port && username && password && camera_type) {
-        this.$http.post('http://localhost:3000/cctv_infos', {
+        axios.post('http://localhost:8888/api/cctv/add', {
           name: name,
           ptz_control_usage: this.ptz_control_usage,
-          alarm: this.alarm,
+          forwarded : this.forwarded,
           emergency_bell: this.emergency_bell,
           comment: comment,
           ip_address: ip_address,
@@ -218,15 +211,6 @@ export default {
           username: username,
           password: password,
           camera_type: camera_type,
-          manage_port: this.manage_port,
-          forwarded : this.forwarded,
-          updated_at : this.updated_at,
-          control_group: this.control_group,
-          reporter: this.reporter,
-          reporter_comment: this.reporter_comment,
-          health_comment : this.health_comment,
-          user_comment : this.user_comment,
-          group_id : this.group_id
         })
         .then((res) => {
           this.CCTVInfos.push(res.data);
@@ -251,19 +235,9 @@ export default {
           this.username = '',
           this.password = '',
           this.camera_type = '',
-          this.manage_port = '',
-          this.forwarded = 0,
-          this.updated_at = "",
-
-          this.ptz_control_usage = 0,
-          this.alarm = 0,
-          this.emergency_bell = 0,
-          this.control_group = false,
-          this.reporter = '',
-          this.reporter_comment = '',
-          this.health_comment = '',
-          this.user_comment = ''
-          this.group_id = 0
+          this.forwarded = false,
+          this.ptz_control_usage = false,
+          this.emergency_bell = false
         })
       }
     },

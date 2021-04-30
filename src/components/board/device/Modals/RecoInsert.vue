@@ -34,7 +34,7 @@
           <div class="modal-footer">
             <span name="footer">
               <button class="button-cancle" @click="$emit('close')">취소</button>
-              <button class="button-add" @click="updateRecoInfo(name, ip_address, vendor), $emit('close')" >추가</button>
+              <button class="button-add" @click="addRecoInfo(name, ip_address, vendor), $emit('close')" >추가</button>
             </span>
           </div>
         </div>
@@ -44,14 +44,9 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
-  props : {
-    recoId: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
         return {
             RecoInfos: [],
@@ -65,16 +60,18 @@ export default {
   },
   methods: {
     getRecoInfo () {
-      this.$http.get('http://localhost:3000/recoding_infos/'+this.recoId)
-      .then((res) => {
-          this.name = res.data.name
-          this.ip_address = res.data.ip_address
-          this.vendor = res.data.vendor
-      })
+        if(this.RecoInfos.length > 0) {
+            this.RecoInfos = []; 
+        }
+
+        axios.get('http://localhost:8888/api/recoding/list')
+        .then((res) => {
+            this.RecoInfos = res.data.data
+        })
     },
-    updateRecoInfo(name, ip_address, vendor) {
+    addRecoInfo(name, ip_address, vendor) {
         if(name && ip_address && vendor){
-            this.$http.post('http://localhost:3000/recoding_infos', {
+            axios.post('http://localhost:8888/api/recoding/add', {
             name: name,
             ip_address: ip_address,
             vendor: vendor

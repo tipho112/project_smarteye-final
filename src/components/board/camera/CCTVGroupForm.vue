@@ -71,7 +71,7 @@
 
     <InsertGroupId :group_id.sync="group_id" v-if="InsertModal" @close="InsertModal = false" v-on:close="loadCCTVinGroup()">
     </InsertGroupId>
-    <GroupUpdate :group_id.sync="group_id" v-if="UpdateModal" @close="UpdateModal = false" v-on:close="getGroupInfos()">
+    <GroupUpdate :groupData.sync="groupData" v-if="UpdateModal" @close="UpdateModal = false" v-on:close="getGroupInfos(), getCCTVInfos()">
     </GroupUpdate>
 </div>
 </template>
@@ -80,6 +80,8 @@
 import GroupUpdate from './Modals/CCTVGroup/UpdateModal.vue';
 import InsertGroupId from './Modals/CCTVGroup/InsertGroupId.vue';
 import SideBar from '../../common/SideBar.vue';
+
+import axios from 'axios';
 
 export default {
     mounted() {
@@ -93,23 +95,24 @@ export default {
             checkedCCTV: [],
             selectAll : false,
             Group_Name : '',
-            group_id: 0,
+            groupData : [],
+
+            sendData: [],
             UpdateModal:false,
             InsertModal: false,
-            Copy_CCTV: []
         }
     },
     methods: {
         getGroupInfos () {
-            this.$http.get('http://localhost:3000/cctvgroup_infos')
+            axios.get('http://localhost:8888/api/cctvgroup/list')
             .then((res) => {
-                this.Group_Infos = res.data
+                this.Group_Infos = res.data.data
             })
         },
         getCCTVInfos() {
-            this.$http.get('http://localhost:3000/cctv_infos')
+            axios.get('http://localhost:8888/api/cctv/list')
             .then((res) => {
-                this.CCTV_Infos = res.data
+                this.CCTV_Infos = res.data.data
             })
 
             this.Group_Name = '';
@@ -146,7 +149,7 @@ export default {
             else {
                 for(let i = 0; i < this.Group_Infos.length; i++) {
                     if(this.Group_Infos[i].name == this.Group_Name) {
-                        this.group_id = this.Group_Infos[i].id
+                        this.groupData = this.Group_Infos[i]
                     }
                 }
                 this.UpdateModal = !this.UpdateModal;
@@ -167,39 +170,22 @@ export default {
             else {
                 for(let i = 0; i < this.Group_Infos.length; i++) {
                     if(this.Group_Infos[i].name == this.Group_Name) {
-                        this.group_id = this.Group_Infos[i].id
+                        this.sendData = this.Group_Infos[i]
                     }
                 }
             }
-
+            console.log(this.group_id);
             if(this.CCTV_Infos.length > 0) {
                 this.CCTV_Infos = [];
             }
 
-            this.$http.get('http://localhost:3000/cctv_infos')
-            .then((res) => {
-                this.Copy_CCTV = res.data
+            axios.post('http://localhost:8888/api/cctvgroup/listingroup', {
+                id: this.sendData.id,
+                name: this.sendData.name
             })
-
-            for(let i = 0; i < this.Copy_CCTV.length; i++) {
-                if(this.Copy_CCTV[i].group_id == this.group_id) {
-                    this.CCTV_Infos.push({
-                        id: this.Copy_CCTV[i].id,
-                        ptz_control_usage: this.Copy_CCTV[i].ptz_control_usage,
-                        name: this.Copy_CCTV[i].name,
-                        model: this.Copy_CCTV[i].model,
-                        area1: this.Copy_CCTV[i].area1,
-                        area2: this.Copy_CCTV[i].area2,
-                        area3: this.Copy_CCTV[i].area3,
-                        manage_port: this.Copy_CCTV[i].manage_port,
-                        rtsp_port: this.Copy_CCTV[i].rtsp_port,
-                        manufacturer: this.Copy_CCTV[i].manufacturer,
-                        camera_type: this.Copy_CCTV[i].camera_type,
-                    })
-                }
-            }
-
-            this.Copy_CCTV = [];
+            .then((res) => {
+                this.CCTV_Infos = res.data.data
+            })
         },
         insertGroupID() {
             if(this.Group_Name == '')  {

@@ -14,7 +14,7 @@
             <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </span>
     </div>
-      
+    <span><input type="text" v-model="searchName" placeholder="검색할 CCTV 이름"></span>
     <div>
         <table class="table1">
             <colgroup>
@@ -38,13 +38,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr class="table1-body" v-for="(CCTVInfo, i) in CCTVInfos" :key="i">
+                    <tr v-for="(CCTVInfo, i) in CCTVInfos" :key="i" v-if="CCTVInfo.name.includes(searchName)" v-bind:class="{'table1-body2' : CCTVInfo.ptz_control_usage == 0, 'table1-body1' : CCTVInfo.ptz_control_usage != 0}" >
                         <td></td>
                         <td><input type="checkbox" :value="CCTVInfo.id" v-model="checkedCCTV"></td>
                         <td><span> {{ i+1 }}  </span></td>
                         <td>
-                            <span v-if="CCTVInfo.ptz_control_usage == 1"> 정상 </span>
-                            <span v-else-if="CCTVInfo.ptz_control_usage == 0"> 고장 </span>
+                            <span v-if="CCTVInfo.ptz_control_usage == 1"> 사용 </span>
+                            <span v-else-if="CCTVInfo.ptz_control_usage == 0"> 비사용 </span>
                         </td>
                         <td><span> {{ CCTVInfo.name }} </span></td>
                         <td><span> {{ CCTVInfo.area1 }} {{ CCTVInfo.area2 }} {{ CCTVInfo.area3 }}</span></td>
@@ -61,13 +61,14 @@
     </div>
 
     <CCTVInsert v-if="showInsert" @close="showInsert = false, getCCTVInfo()"></CCTVInsert>
-    <CCTVUpdate :CCTVId.sync="CCTVId" v-if="showUpdate" @close="showUpdate = false, getCCTVInfo()"></CCTVUpdate>
+    <CCTVUpdate :sendData.sync="sendData" v-if="showUpdate" @close="showUpdate = false, getCCTVInfo()"></CCTVUpdate>
 </div>
 </template>
 
 <script>
 import CCTVInsert from './Modals/CCTVInfo/CCTVInsertModal.vue';
 import CCTVUpdate from './Modals/CCTVInfo/CCTVUpdateModal.vue';
+import axios from 'axios';
 
 
 import SideBar from '../../common/SideBar.vue';
@@ -85,17 +86,19 @@ export default {
         return {
             CCTVInfos: [],
             checkedCCTV: [],
+            sendData: [],
             showInsert: false,
             showUpdate: false,
             selectAll : false,
-            CCTVId: ''
+            CCTVId: '',
+            searchName: '',
         }
     },
     methods: {
         getCCTVInfo () {
-            this.$http.get('http://localhost:3000/cctv_infos')
+            axios.get('http://localhost:8888/api/cctv/list')
             .then((res) => {
-                this.CCTVInfos = res.data
+                this.CCTVInfos = res.data.data
             })
         },
         delCCTVInfo (checkedCCTV) {
@@ -106,13 +109,15 @@ export default {
             else {
                 for(let i = 0; i < checkedCCTV.length; i++)
                 {
-                    this.$http.delete('http://localhost:3000/cctv_infos/'+checkedCCTV[i])
+                    axios.post('http://localhost:8888/api/cctv/delete', {
+                        id:checkedCCTV[i]
+                    })
                     .then((res) => {
                     this.getCCTVInfo()
                  })
                 }
             }
-            
+
             this.checkedCCTV = [];
         },
         checkAll() {
@@ -123,7 +128,7 @@ export default {
                 }
             }
         },
-        ShowInsertModal() {           
+        ShowInsertModal() {
                 this.showInsert = !this.showInsert;
         },
         ShowUpdateModal() {
@@ -134,10 +139,13 @@ export default {
                 alert('녹화장치를 하나만 선택해주세요.')
             }
             else {
-                this.CCTVId = this.checkedCCTV[0];
+                for(let i = 0; i < this.CCTVInfos.length; i++) {
+                    if(this.checkedCCTV[0] == this.CCTVInfos[i].id) {
+                        this.sendData = this.CCTVInfos[i];
+                    }
+                }
                 this.showUpdate = !this.showUpdate;
             }
-                
         },
     },
 
@@ -202,4 +210,20 @@ export default {
   color: #ffffff;
 }
 
+.table1-body1{
+      overflow:scroll;
+      text-align: center;
+      background-color: #eff4f8;
+      height: 50px;
+      vertical-align: middle;
+  }
+
+.table1-body2{
+      overflow:scroll;
+      text-align: center;
+      background-color: #eff4f8;
+      height: 50px;
+      vertical-align: middle;
+      color: red;
+  }
 </style>
