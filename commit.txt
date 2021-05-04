@@ -1,6 +1,9 @@
-commit.txt
+김정수
 
-asdfasdf
-lklk
+cctv_infos
 
-asdfasdfasdf
+집중관제 칼럼 추가
+
+alter table cctv_infos add cent_con boolean not null default false;
+select id, title, IF(completed, 'true', 'false') as completed from todo;
+===========================================================
