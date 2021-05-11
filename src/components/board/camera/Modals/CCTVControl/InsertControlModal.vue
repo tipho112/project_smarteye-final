@@ -16,11 +16,11 @@
                 <col width="60%">
               </colgroup>
               <tbody>
-                <tr v-for="(CCTV_Info, i) in CCTV_Infos" :key="i" class="list-unstyled">
-                    <template v-if="CCTV_Info.control_group == false && i < 30" >
-                    <td><input type="checkbox" :value="CCTV_Info.id" v-model="checkList"></td>
-                    <td><span> {{ CCTV_Info.name }} </span></td>
-                    </template>
+                <tr v-for="(CCTVInfo, i) in CCTVInfos" :key="i" class="list-unstyled">
+                    <!-- <template v-if="CCTV_Info.control_group == false && i < 30" > -->
+                    <td><input type="checkbox" :value="CCTVInfo.id" v-model="checkList"></td>
+                    <td><span> {{ CCTVInfo.name }} </span></td>
+                    <!-- </template> -->
                 </tr>
               </tbody>
             </table>
@@ -39,33 +39,34 @@
 
 
 <script>
+import axios from 'axios';
 
 export default {
   data() {
         return {
-            CCTV_Infos: [],
+            CCTVInfos: [],
             checkList: [],
         }
   },
   mounted() {
-    this.getData()
+    this.getCCTVInfo()
   },
   methods: {
-    getData() {
-      this.$http.get('http://localhost:3000/cctv_infos/')
+    getCCTVInfo () {
+      axios.get('http://localhost:8888/api/cctv/cent_con_add')
       .then((res) => {
-          this.CCTV_Infos = res.data
+          this.CCTVInfos = res.data.data
       })
-    },
-    filterData() {
     },
     updateControl() {
         for(let i = 0; i < this.checkList.length; i++) {
-            this.$http.patch('http://localhost:3000/cctv_infos/'+this.checkList[i], {
-                control_group: true
-            })
-            .then((res) => {
-            })
+          axios.post('http://localhost:8888/api/cctv/cent_con_update', {
+              id: this.checkList[i],
+              cent_con: true
+          })
+          .then((res) => {
+              // this.CCTVInfos.push(res.data.data);
+          })
         }
     }
   }
